@@ -1,12 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import SelectLangauge from './path/SelectLangauge';
+import GiveYourData from './path/GiveYourData';
 import reportWebVitals from './reportWebVitals';
+
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path='/selectLangauge' element={<SelectLangauge />} />
+        <Route path='/giveYourData/:language' element={<GiveYourData />} />
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );
