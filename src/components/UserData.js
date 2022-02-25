@@ -10,10 +10,13 @@ import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 
+import '../App.css';
+
 import Select from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
 
 import LanguageSelectButton from '../partials/LanguageSelectButton';
+import { SignalWifiStatusbarNullRounded } from '@mui/icons-material';
 
 
 const Tabelle = styled('div')(({theme})=>({
@@ -22,7 +25,11 @@ const Tabelle = styled('div')(({theme})=>({
         width:'90%'
     },
     boxShadow: "1px -1px 14px 0px #818181", 
-    marginTop: "30px"
+    marginTop: "30px",
+    '&:hover' : {
+        fontWeigt: '900',
+        boxShadow: "-1px 1px 20px 5px #8f8a8a"
+    }
 }));
 
 const Zeile1 = styled('div')(({theme})=>({
@@ -63,8 +70,16 @@ const VornameText = styled('p')(({theme})=>({
 
 const DeleteButton = styled(Button)(({theme})=>({
     [theme.breakpoints.down('md')] : {
-        fontSize:'10px'
+        
     },
+    fontSize: "0.6rem"
+}));
+
+const CostumCardContent = styled(CardContent)(({theme})=>({
+    '&:hover' : {
+        fontWeigt: '900',
+        boxShadow: "-1px 1px 20px 5px #8f8a8a"
+    }
 }));
 
 
@@ -78,22 +93,38 @@ var faelle = [
 var sichtenArray = [
     {value : 0, text: 'patientSicht'},
     {value : 10, text: 'arztsicht'},
+    {value : 20, text: 'extraSicht'},
 ]
 
 var aerzte = {
-    frauenArzt: 'Frauenarzt',
-    allgemeinArzt: 'Allgemeinarzt',
-    sonstiges: 'Sonstiges'
+    '0' : [
+        {value : 0, text: 'Allgemeinarzt'},
+        {value : 10, text: 'Frauenarzt'},
+        {value : 20, text: 'Sonstiges'},
+    ]
+    ,
+    '10' : [
+        {value : 0, text: 'Allgemeinarzt'},
+        {value : 10, text: 'Frauenarzt'},
+        {value : 20, text: 'Sonstiges'},
+    ]
+    ,
+    '20' : 
+    [
+        {value : 0, text: 'طبيب عام'},
+        {value : 10, text: 'دكتور امراض نساء'},
+        {value : 20, text: 'غيره'},
+    ]
+    ,
+    '30' : 
+    [
+        {value : 0, text: 'general practitioner'},
+        {value : 10, text: 'gynecologist'},
+        {value : 20, text: 'miscellaneous'},
+    ]
+    ,
 };
 
-var warteZeitNutzerdaten = [
-    {vorname : '', 
-    nachname: '', 
-    versicherungsnummer: 0, 
-    arzt: aerzte.sonstiges, 
-    wartezeit: 0, 
-    zeitBeimArzt: 0}
-];
 
 var initialNutzer = {
     vorname : 'odai', 
@@ -103,65 +134,7 @@ var initialNutzer = {
     zeitBeimArzt: 0,
 
 };
-const listeDerPatientenX = [
 
-    
-    //Fall1
-     {
-        vorname : 'odai',
-        nachname: 'almoued',
-        versicherungsnummer : 23132423,
-        arzt : 'frauenarzt',
-        wartezeit : 15,
-        zeitBeimArzt : 0
-    },
-    //Fall2
-   {
-        vorname : 'momo',
-        nachname: 'kaka',
-        versicherungsnummer : 231324123,
-        arzt : 'frauenarzt',
-        wartezeit : 7,
-        zeitBeimArzt : 0
-    },
-
-    //Fall3
-    {
-        vorname : 'ahmed',
-        nachname: 'kaaa',
-        versicherungsnummer : 231324234,
-        arzt : 'allgemeinerArzt',
-        wartezeit : 0,
-        zeitBeimArzt : 0
-    },
-    //Fall4
-    {
-        vorname : 'komo',
-        nachname: 'kaka',
-        versicherungsnummer : 231324123,
-        arzt : 'frauenarzt',
-        wartezeit : 0,
-        zeitBeimArzt : 3
-    },
-    //Fall5
-    {
-        vorname : 'pomo',
-        nachname: 'kaka',
-        versicherungsnummer : 231324123,
-        arzt : 'frauenarzt',
-        wartezeit : 0,
-        zeitBeimArzt : 20
-    },
-    //Fall6
-    {
-        vorname : 'rmo',
-        nachname: 'kaka',
-        versicherungsnummer : 231324123,
-        arzt : 'frauenarzt',
-        wartezeit : 0,
-        zeitBeimArzt : 15
-    }
-]
 
 
 
@@ -170,21 +143,25 @@ var eingabeFelder = {
         'Vorname', 
         'Nachname',
         'Versicherungsnummer', 
+        {'ueberschrift' : 'Bitte geben Sie Ihre Daten ein'}
     ],
     '10' : [
         'Vorname', 
         'Nachname',
         'Versicherungsnummer',
+        {'ueberschrift' : 'Bitte geben Sie Ihre Daten ein'}
     ],
     '20' : [
         'الاسم الاول', 
         'الاسم الاخير',
         'بطاقة التامين الصحي',
+        {'ueberschrift' : 'الرجاءادخال المعلومات المطلوبة'}
     ],
     '30' : [
         'First name', 
         'Last name',
         'insurance number',
+        {'ueberschrift' : 'Bitte geben Sie Ihre Daten ein'}
     ],
 }
 
@@ -219,11 +196,18 @@ function UserData(props){
 
     function changeSicht(x){
         if(x == 'patientSicht'){
+            document.getElementById('tabelle').classList.add('bewegen')
+            setTimeout(() => {
+                setPatientenSicht(true)
+                setShowCurrentPatient(true);
+                console.log(patientenSicht)
+            }, 1500);
+        } else if(x == 'extraSicht'){
             setPatientenSicht(true)
-            console.log(patientenSicht)
+            setShowCurrentPatient(false);
         } else {
             setPatientenSicht(false)
-            console.log(patientenSicht)
+            console.log(patientenSicht)            
         }
     }
 
@@ -256,11 +240,10 @@ function UserData(props){
             }
 
             var current = new Date();
-            var neu = new Date(current.getTime() + 60*60000)
-            console.log(neu) 
-            setNeuSekunden(neu.getSeconds());
-            setNeuMinuten(neu.getMinutes());
-            setNeuStunden(neu.getHours());
+         
+            setNeuSekunden(new Date(current.getTime() + state.length*15*60000).getSeconds());
+            setNeuMinuten(new Date(current.getTime() + state.length*15*60000).getMinutes());
+            setNeuStunden(new Date(current.getTime() + state.length*15*60000).getHours());
 
             dispatch({type:'add', payload: currentPatientErweitert})
             setShowCurrentPatient(true);
@@ -282,12 +265,13 @@ function UserData(props){
             }
 
             var current = new Date();
-            setNeuSekunden(new Date(current.getTime() + 60*60000).getSeconds());
-            setNeuMinuten(new Date(current.getTime() + 60*60000).getMinutes());
-            setNeuStunden(new Date(current.getTime() + 60*60000).getHours());
+            setNeuSekunden(new Date(current.getTime() + state.length*15*60000).getSeconds());
+            setNeuMinuten(new Date(current.getTime() + state.length*15*60000).getMinutes());
+            setNeuStunden(new Date(current.getTime() + state.length*15*60000).getHours());
 
             dispatch({type:'add', payload: currentPatientErweitert})
             setShowCurrentPatient(true);
+            console.log(state)
         }
 
     }
@@ -299,7 +283,7 @@ function UserData(props){
             setSekunden(new Date().getSeconds())
             setMinuten(new Date().getMinutes())
             setStunden(new Date().getHours())
-        }, 1500);
+        }, 1000);
     }, [])
 
 
@@ -352,41 +336,99 @@ function UserData(props){
 
     
     if(patientenSicht){
-        if(false){
+        if(showCurrentPatient){
             return(
                 <>
                     <UserDataContainer>
-                        <select name="" id="sicht" onChange={changeSicht}>
-                            <option value="patientSicht">Patientensicht</option>
-                            <option value="arztSicht">Arztsicht</option>
-                        </select>
+                        <Select
+                            name="sichten"
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={sichten}
+                            label="Sicht"
+                            onChange={handleChange2}
+                            >
+                                {
+                                    sichtenArray.map(sicht=>(
+                                        <MenuItem key={sicht.value} value={sicht.text}>         
+                                            {sicht.text}
+                                        </MenuItem>
+                                        
+                                    ))
+                                }
+                        </Select>
 
-                        <CardContent sx={{  display: "flex",
+                        <CostumCardContent sx={{  display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
                             boxShadow: "-1px 1px 10px 0px #8f8a8a",
                             margin: "68px"}}>
                             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                            Hallo <span style={{fontWeight:'bolder'}}>{currentPatient.vorname.toUpperCase()}</span> es ist gerade: 
+                                {
+                                    props.language == 20 ?
+                                    <>
+                                     مرحبا <span style={{fontWeight:'bolder', fontSize: "16px", textDecoration: 'underline'}}>{currentPatient.vorname.toUpperCase()}</span> الساعة الان: 
+                                    </>
+                                    :
+                                    <>
+                                        Hallo <span style={{fontWeight:'bolder', fontSize: "16px", textDecoration: 'underline'}}>{currentPatient.vorname.toUpperCase()}</span> es ist gerade: 
+                                    </>
+                                }
+                            
                             </Typography>
                             <Typography variant="h5" component="div">
-                                {stunden<10?`0${stunden}`:stunden}:
-                                {minuten<10?`0${minuten}`:minuten}:
-                                {sekunden<10?`0${sekunden}`:sekunden}Uhr
+                                {
+                                    props.language == 20 ?
+                                    <>
+                                        {stunden<10?`0${stunden}`:stunden}:
+                                        {minuten<10?`0${minuten}`:minuten}:
+                                        {sekunden<10?`0${sekunden}`:sekunden} 
+                                    </>
+                                    :
+                                    <>
+                                        {stunden<10?`0${stunden}`:stunden}:
+                                        {minuten<10?`0${minuten}`:minuten}:
+                                        {sekunden<10?`0${sekunden}`:sekunden} Uhr
+                                    </>
+                                }
                             </Typography>
                             <Typography sx={{ mb: 1.5, textAlign:'center' }} color="text.secondary">
-                                Es sind gerade 4 Leute vor Ihnen
+                                { props.language == 20 ?
+                                <>
+                                هناك حاليا <span style={{fontWeight:'bolder'}}>{state.length - 1}</span> اشخاص قبلك 
+                                </>
+                                :
+                                <>
+                                Es sind gerade <span style={{fontWeight:'bolder'}}>{state.length - 1}</span> Personen vor Ihnen
+                                </>
+                                }
                             </Typography>
                             <Typography variant="body2" sx={{textAlign:'center'}}>
-                                Das heißt Sie haben eine Wartezeit von ungefähr 60min also um
+                                {props.language == 20 ?
+                                <>
+                                وقت الانتظار حوالي <span style={{fontWeight:'bolder'}}>{(state.length - 1) * 15} دقيقة</span> في الساعة
                                 <br />
+                                <span style={{fontWeight:'bolder'}}>
                                 {neuStunden<10?`0${neuStunden}`:neuStunden}:
                                 {neuMinuten<10?`0${neuMinuten}`:neuMinuten}:
-                                {neuSekunden<10?`0${neuSekunden}`:neuSekunden}Uhr
+                                {neuSekunden<10?`0${neuSekunden}`:neuSekunden} 
+                                </span>
+                                </>
+                                :
+                                <>
+                                Ihre Wartezeit beträgt ca. <span style={{fontWeight:'bolder'}}>{(state.length - 1) * 15}min</span> also um
+                                <br />
+                                <span style={{fontWeight:'bolder'}}>
+                                {neuStunden<10?`0${neuStunden}`:neuStunden}:
+                                {neuMinuten<10?`0${neuMinuten}`:neuMinuten}:
+                                {neuSekunden<10?`0${neuSekunden}`:neuSekunden} Uhr
+                                </span>
+                                </>
+                                }
                             </Typography>
-                            </CardContent>
+                            </CostumCardContent>
                             <CardActions>
-                            <Button size="small">ZURÜCK</Button>
+                            <Button size="small" onClick={()=>changeSicht('extraSicht')}>ZURÜCK</Button>
                         </CardActions>
                     </UserDataContainer>
                 </>
@@ -394,7 +436,7 @@ function UserData(props){
         }
         return(
             <>
-                <UserDataContainer>
+                <UserDataContainer id='userContainer'>
                     <Select
                         name="sichten"
                         labelId="demo-simple-select-label"
@@ -412,10 +454,13 @@ function UserData(props){
                                 ))
                             }
                     </Select>
-                    <Ueberschrift>Bitte geben Sie Ihre Daten ein</Ueberschrift>
+                    <Ueberschrift>{eingabeFelder[props.language][3].ueberschrift}</Ueberschrift>
                 {
                 eingabeFelder[props.language].map(eingabeFeld=>(
                     <>
+                    {
+                        typeof eingabeFeld == 'string' ?
+                    
                     <TextField
                     onChange={e=>setCurrentPatient({...currentPatient, [e.target.name]: e.target.value})}
                     name={eingabeFeld.toLowerCase()}
@@ -424,24 +469,26 @@ function UserData(props){
                     id="demo-helper-text-aligned"
                     label={eingabeFeld}
                     />
-    
+                    :
+                    null
+                    }
                     </>
                     ))   
                 }
 
                 <Box component={'div'} sx={{width: 'fit-content' ,marginTop:'10px', marginBottom: '10px',minWidth: 230, marginRight: 'auto',  marginLeft: 'auto'}}>
                     <FormControl fullWidth >
-                        <InputLabel id="demo-simple-select-label">Arzt</InputLabel>
+                        <InputLabel id="demo-simple-select-label">{props.language == 20 ? 'طبيب' : 'Aqrzt'}</InputLabel>
                         <Select
-                        name="arzt"
+                        name="Asrzt"
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={arzt}
-                        label="Arzt"
+                        label={'Arzt'}
                         onChange={handleChange}
                         >
                             {
-                                faelle.map(fall=>(
+                                aerzte[props.language].map(fall=>(
                                     <MenuItem key={fall.value} value={fall.text}>         
                                     {fall.text}
                                     </MenuItem>
@@ -453,7 +500,7 @@ function UserData(props){
                 </Box>
 
                 <LanguageSelectButton onClick={currentPatientErweitern}>
-                    speichern
+                    {props.language == 20 ? 'حفظ' : 'Speichern'}
                 </LanguageSelectButton>
                 </UserDataContainer>
             </>
@@ -479,7 +526,7 @@ function UserData(props){
                         }
                 </Select>
 
-                <Tabelle>
+                <Tabelle id='tabelle' className=''>
                     <Zeile0 sx={{borderBottom:'1px solid black'}}>
                         <Text>Vorname</Text>
 
@@ -491,9 +538,9 @@ function UserData(props){
                     {   
                         state.map(patient=>(
                             <Zeile1>
-                                <VornameText>{patient.vorname}</VornameText>
-                                <Text>{patient.wartezeit}</Text>
-                                <Text>{patient.zeitBeimArzt}</Text>
+                                <VornameText>{patient.vorname.toUpperCase()}</VornameText>
+                                <Text>{patient.wartezeit}min</Text>
+                                <Text>{patient.zeitBeimArzt}min</Text>
                                 <DeleteButton variant="text" onClick={()=>removePatient(patient.vorname)}>LÖSCHEN</DeleteButton>
                             </Zeile1>
                         ))

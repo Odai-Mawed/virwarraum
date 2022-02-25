@@ -13,7 +13,7 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path='/selectLangauge' element={<SelectLangauge />} />
+        <Route path='/' element={<SelectLangauge />} />
         <Route path='/giveYourData/:language' element={<GiveYourData />} />
       </Routes>
     </BrowserRouter>
